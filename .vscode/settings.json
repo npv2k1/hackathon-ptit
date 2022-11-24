@@ -1,0 +1,6 @@
+{
+    "editor.acceptSuggestionOnEnter": "on",
+    "[solidity]": {
+        "editor.tabSize": 4
+    }
+}
