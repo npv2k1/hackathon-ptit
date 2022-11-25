@@ -19,14 +19,29 @@ async function main() {
 
   // We get the contract to deploy
   // eslint-disable-next-line camelcase
-  const Token: TodoList__factory = await ethers.getContractFactory("TodoList");
+  // const Token: TodoList__factory = await ethers.getContractFactory("TodoList");
 
-  // const ownerAddress = "0x4D9d313faBe4Fc3051c276e8C7E3663Ef5A85513";
-  // const initialSupply = 1000;
+  // // const ownerAddress = "0x4D9d313faBe4Fc3051c276e8C7E3663Ef5A85513";
+  // // const initialSupply = 1000;
 
-  const token = await Token.deploy();
+  // const token = await Token.deploy();
 
-  console.log("Greeter deployed to:", token.address);
+  // console.log("Greeter deployed to:", token.address);
+
+  const employeeIdContract = await ethers.getContractFactory("EmployeeID");
+  const employeeId = await employeeIdContract.deploy("EmployeeID", "EID");
+  console.log("EmployeeId deployed to:", employeeId.address);
+
+  const tokenContract = await ethers.getContractFactory("VdtToken");
+  const token = await tokenContract.deploy();
+  console.log("Token deployed to:", token.address);
+
+  const checkInContract = await ethers.getContractFactory("CheckinContract");
+  const checkIn = await checkInContract.deploy(
+    employeeId.address,
+    token.address
+  );
+  console.log("CheckIn deployed to:", checkIn.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
