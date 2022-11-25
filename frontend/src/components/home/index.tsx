@@ -1,19 +1,28 @@
-import { useCallback, useState } from "react";
+import { Button, Col, Row } from "antd";
+import { useCallback, useEffect, useState } from "react";
+import { useConnectContractEmployee, useGetUser, useHandleFetchUserData, useSetInfo } from "src/hook";
 import getWeb3 from "src/utils/getWeb3";
-import { Button, Grid } from "@web3uikit/core";
-import { NFT } from "@web3uikit/web3";
+import NFTCard from "./nft";
 import TableListEmployee from "./table-list-employee";
-import { useMoralis } from "react-moralis";
 
 const HomePage = () => {
-  const [account, setAccount] = useState<string>();
+  const setUser = useSetInfo();
+  const getUser = useHandleFetchUserData();
+  const user = useGetUser();
+  useEffect(() => {
+    const handleGetUser = async () => {
+      const userFetch = await getUser()
+      // console.log("userFetch: ", userFetch);
+    }
+    handleGetUser()
+  }, [getUser, user])
   const handleConnectWallet = useCallback(() => {
     const connect = async () => {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
         const account = accounts[0];
-        setAccount(account);
+        setUser(account);
       } else {
         console.log("Account not found");
       }
@@ -23,61 +32,48 @@ const HomePage = () => {
   return (
     <div className="max-w-[1240px] mx-auto pt-[50px]">
       <div className="mb-[20px]">
-        {!account && (
+        {!user && (
           <Button
             onClick={handleConnectWallet}
-            text="Connect wallet"
-            theme="primary"
-          />
+            type="primary"
+          >
+            Connect wallet
+          </Button>
         )}
-        {account && (
-          <p>hello {account}</p>
+        {user && (
+          <p>hello {user}</p>
         )}
       </div>
-      < Grid
-        alignItems="flex-start"
-        justifyContent="flex-end"
-        spacing={12}
-        style={{
-          height: '400px'
-        }}
-        type="container"
-      >
-        <Grid {...{
-          lg: 10,
-          md: 10,
-          sm: 6,
-          type: "item",
-          xs: 12
+      <Row gutter={[{ sm: 12, md: 24 }, { sm: 12, md: 24 }]}>
+        <Col {...{
+          lg: 18,
+          md: 18,
+          sm: 24,
+          xs: 24
         }}>
           <TableListEmployee />
-        </Grid>
-        <Grid {...{
-          lg: 2,
-          md: 2,
-          sm: 6,
-          type: "item",
-          xs: 12
+        </Col>
+        <Col {...{
+          lg: 6,
+          md: 6,
+          sm: 24,
+          xs: 24
         }}>
           <div>
             <div className="mb-[20px]">
-              <NFT
-                address="0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB"
-                chain="eth"
-                fetchMetadata
-                tokenId="1"
-              />
+              <NFTCard />
             </div>
             <div>
               <Button
                 onClick={() => { }}
-                text="Kết thúc ngay"
-                theme="primary"
-              />
+                type="primary"
+              >
+                Kết thúc ngay
+              </Button>
             </div>
           </div>
-        </Grid>
-      </Grid>
+        </Col>
+      </Row>
     </div>
   );
 }

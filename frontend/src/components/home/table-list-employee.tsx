@@ -1,53 +1,41 @@
-import { Avatar, Table, Tag } from "@web3uikit/core";
+import { Table } from "antd";
 
 const TableListEmployee = () => {
+  const dataSource = [
+    {
+      key: '1',
+      name: 'Mike',
+      age: 32,
+      address: '10 Downing Street',
+    },
+    {
+      key: '2',
+      name: 'John',
+      age: 42,
+      address: '10 Downing Street',
+    },
+  ];
+
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+      key: 'age',
+    },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
+  ];
+
   return (
-    <Table
-      columnsConfig="80px 3fr 2fr 2fr 80px"
-      data={[
-        [
-          <Avatar isRounded size={36} theme="image" />,
-          'Moralis Magi',
-          <Tag color="blue" text="Nft Collection" />,
-          '0x18...130e',
-        ],
-        [
-          <Avatar fontSize={36} isRounded theme="image" />,
-          'My Cool Nft',
-          <Tag color="red" text="Lazy Nft" />,
-          '0x18...130e',
-        ],
-        [
-          <Avatar fontSize={36} isRounded theme="image" />,
-          'Magi Cool Topen',
-          <Tag color="yellow" text="Pack" />,
-          '0x18...130e',
-        ],
-        [
-          <Avatar fontSize={36} isRounded theme="image" />,
-          'My Marketplace',
-          <Tag color="red" text="Nft Marketplace" />,
-          '0x18...130e',
-        ]
-      ]}
-      header={[
-        '',
-        <span>Name</span>,
-        <span>Type</span>,
-        <span>Module</span>,
-        ''
-      ]}
-      isColumnSortable={[
-        false,
-        true,
-        false,
-        false
-      ]}
-      maxPages={3}
-      onPageNumberChanged={function noRefCheck() { }}
-      onRowClick={function noRefCheck() { }}
-      pageSize={5}
-    />
+    <Table dataSource={dataSource} columns={columns} />
   )
 }
 

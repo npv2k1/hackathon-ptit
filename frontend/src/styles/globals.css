@@ -1,3 +1,4 @@
-@tailwind base;
+/* comment this line by confict with antd css*/
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
