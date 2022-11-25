@@ -1,13 +1,38 @@
 import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import { MoralisProvider } from 'react-moralis'
-
+import App, { AppInitialProps, AppProps } from 'next/app'
+import { wrapper } from 'src/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { useStore } from 'react-redux';
+import cookie from "cookie";
 function MyApp({ Component, pageProps }: AppProps) {
+  const store: any = useStore();
   return (
-    <MoralisProvider appId={"hackathon-ptit-genesis-team"} serverUrl={"http://localhost:3000"}>
+    <PersistGate
+      {...{
+        loading: null,
+        persistor: store.__persistor,
+      }}
+    >
       <Component {...pageProps} />
-    </MoralisProvider>
+    </PersistGate>
   )
 }
 
-export default MyApp
+MyApp.getInitialProps = async (
+  appContext: any,
+): Promise<AppInitialProps & AppProps> => {
+  let user: string = "";
+  const request = appContext.ctx.req;
+  if (request) {
+    request.cookies = cookie.parse(request.headers.cookie || "");
+    user = request.cookies.userAddress ?? "";
+  }
+
+  const appProps = await App.getInitialProps(appContext);
+  return {
+    ...appProps,
+    user,
+  } as any;
+};
+
+export default wrapper.withRedux(MyApp);
