@@ -22,9 +22,6 @@
     "paths": {
       "@/components/*": [
         "src/components/*"
-      ],
-      "@contract": [
-        "../contract/src/types/*"
       ]
     }
   },

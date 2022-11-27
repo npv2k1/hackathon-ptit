@@ -21,6 +21,19 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type CheckinEvent = ContractEventLog<{
+  id: string;
+  user: string;
+  timestamp: string;
+  userInfo: string;
+  checkinInfo: string;
+  0: string;
+  1: string;
+  2: string;
+  3: string;
+  4: string;
+}>;
+
 export interface CheckinContract extends BaseContract {
   constructor(
     jsonInterface: any[],
@@ -31,7 +44,7 @@ export interface CheckinContract extends BaseContract {
   methods: {
     checkIn(_checkinInfo: string): NonPayableTransactionObject<void>;
 
-    checkinCount(): NonPayableTransactionObject<string>;
+    checkinId(): NonPayableTransactionObject<string>;
 
     claim(): NonPayableTransactionObject<void>;
 
@@ -41,11 +54,36 @@ export interface CheckinContract extends BaseContract {
       id: number | string | BN
     ): NonPayableTransactionObject<[string, string, string, string, string]>;
 
+    getMyCheckIn(): NonPayableTransactionObject<
+      [string, string, string, string, string][]
+    >;
+
+    getMyInfo(): NonPayableTransactionObject<string>;
+
     getTokenBalance(): NonPayableTransactionObject<string>;
 
+    owner(): NonPayableTransactionObject<string>;
+
     rewardAmount(): NonPayableTransactionObject<string>;
+
+    tokenContract(): NonPayableTransactionObject<string>;
+
+    userInfoContract(): NonPayableTransactionObject<string>;
   };
   events: {
+    CheckinEvent(cb?: Callback<CheckinEvent>): EventEmitter;
+    CheckinEvent(
+      options?: EventOptions,
+      cb?: Callback<CheckinEvent>
+    ): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "CheckinEvent", cb: Callback<CheckinEvent>): void;
+  once(
+    event: "CheckinEvent",
+    options: EventOptions,
+    cb: Callback<CheckinEvent>
+  ): void;
 }

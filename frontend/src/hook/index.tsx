@@ -4,6 +4,7 @@ import * as t from "../redux/types"
 import Cookies from "js-cookie";
 import EMPLOYEE from "../../../contract/artifacts/contracts/EmployeeID.sol/EmployeeID.json";
 import getWeb3 from "src/utils/getWeb3";
+import { EMPLOYEE_CONTRACT_ADDRESS } from "src/common/constant";
 
 export const useSetInfo = () => {
   const dispatch = useDispatch();
@@ -27,10 +28,7 @@ export const useGetUser = () => {
 
 export const useConnectContractEmployee = () => {
   const web3 = getWeb3();
-  return new web3.eth.Contract(
-    EMPLOYEE.abi,
-    "0x67AcED192123d84eFC1B18A98f024c10e656Bc09"
-  )
+  return new web3.eth.Contract(EMPLOYEE.abi, EMPLOYEE_CONTRACT_ADDRESS);
 }
 
 export const useHandleFetchUserData = () => {

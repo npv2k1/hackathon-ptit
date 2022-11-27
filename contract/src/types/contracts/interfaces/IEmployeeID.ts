@@ -29,6 +29,8 @@ export interface IEmployeeID extends BaseContract {
   ): IEmployeeID;
   clone(): IEmployeeID;
   methods: {
+    getAddressInfo(d: string): NonPayableTransactionObject<string>;
+
     getInfo(): NonPayableTransactionObject<string>;
 
     setInfo(_info: string): NonPayableTransactionObject<void>;

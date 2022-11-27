@@ -1,8 +1,9 @@
-import '../styles/globals.css'
-import App, { AppInitialProps, AppProps } from 'next/app'
-import { wrapper } from 'src/redux/store';
-import { PersistGate } from 'redux-persist/integration/react';
-import { useStore } from 'react-redux';
+import "antd/dist/reset.css";
+import "../styles/globals.css";
+import App, { AppInitialProps, AppProps } from "next/app";
+import { wrapper } from "src/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { useStore } from "react-redux";
 import cookie from "cookie";
 function MyApp({ Component, pageProps }: AppProps) {
   const store: any = useStore();
@@ -15,11 +16,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <Component {...pageProps} />
     </PersistGate>
-  )
+  );
 }
 
 MyApp.getInitialProps = async (
-  appContext: any,
+  appContext: any
 ): Promise<AppInitialProps & AppProps> => {
   let user: string = "";
   const request = appContext.ctx.req;

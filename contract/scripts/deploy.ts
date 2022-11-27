@@ -42,6 +42,19 @@ async function main() {
     token.address
   );
   console.log("CheckIn deployed to:", checkIn.address);
+
+  // make const file
+  const fs = require("fs");
+  const path = require("path");
+  const dt = `
+  export const EMPLOYEE_CONTRACT_ADDRESS = "${employeeId.address}";
+  export const TOKEN_CONTRACT_ADDRESS = "${token.address}";
+  export const CHECKIN_CONTRACT_ADDRESS = "${checkIn.address}";  
+  `;
+  fs.writeFileSync(
+    path.join(__dirname, "../../frontend/src/common/constant.ts"),
+    dt
+  );
 }
 
 // We recommend this pattern to be able to use async/await everywhere

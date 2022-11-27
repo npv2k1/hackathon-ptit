@@ -44,6 +44,10 @@ contract EmployeeID is IEmployeeID {
         return _employeeId[msg.sender];
     }
 
+    function getAddressInfo(address d) public view override returns (string memory) {
+        return _employeeId[d];
+    }
+
     function name() public view returns (string memory) {
         return _name;
     }
