@@ -1,39 +1,45 @@
-import "antd/dist/reset.css";
-import "../styles/globals.css";
-import App, { AppInitialProps, AppProps } from "next/app";
-import { wrapper } from "src/redux/store";
-import { PersistGate } from "redux-persist/integration/react";
-import { useStore } from "react-redux";
-import cookie from "cookie";
-function MyApp({ Component, pageProps }: AppProps) {
-  const store: any = useStore();
-  return (
-    <PersistGate
-      {...{
-        loading: null,
-        persistor: store.__persistor,
-      }}
-    >
-      <Component {...pageProps} />
-    </PersistGate>
-  );
+import type { AppProps } from 'next/app'
+import '../assets/css/globals.css'
+
+import ManagedModal from '@components/ui/modal/ManagedModal'
+import { ModalProvider } from '@components/ui/modal/ModalContext'
+import AppProvider from '@contexts/AppContext'
+import { AuthProvider } from '@contexts/AuthContext'
+import { SettingProvider } from '@contexts/SettingContext'
+import { NextPage } from 'next'
+import { ReactElement } from 'react'
+import { Provider } from 'urql'
+import { client } from '../lib/graphql'
+
+export type NextPageWithLayout = NextPage & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode
+  authenticate?: boolean
 }
 
-MyApp.getInitialProps = async (
-  appContext: any
-): Promise<AppInitialProps & AppProps> => {
-  let user: string = "";
-  const request = appContext.ctx.req;
-  if (request) {
-    request.cookies = cookie.parse(request.headers.cookie || "");
-    user = request.cookies.userAddress ?? "";
-  }
+export type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
 
-  const appProps = await App.getInitialProps(appContext);
-  return {
-    ...appProps,
-    user,
-  } as any;
-};
+function MyApp({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page: ReactElement) => page)
+  const authProps = Component.authenticate
 
-export default wrapper.withRedux(MyApp);
+  return (
+    <>
+      <AppProvider>
+        <SettingProvider>
+          <Provider value={client}>
+            <AuthProvider>
+              <ModalProvider>
+                {getLayout(<Component {...pageProps} />)}
+                <ManagedModal />
+              </ModalProvider>
+            </AuthProvider>
+          </Provider>
+        </SettingProvider>
+      </AppProvider>
+    </>
+  )
+}
+
+export default MyApp

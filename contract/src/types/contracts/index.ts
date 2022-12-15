@@ -3,9 +3,11 @@
 /* eslint-disable */
 import type * as checkinSol from "./Checkin.sol";
 export type { checkinSol };
+import type * as sbt from "./SBT";
+export type { sbt };
 import type * as tokenSol from "./Token.sol";
 export type { tokenSol };
 import type * as interfaces from "./interfaces";
 export type { interfaces };
 export type { EmployeeID } from "./EmployeeID";
-export type { TodoList } from "./TodoList";
+export type { VCheckin } from "./VCheckin";

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
     "lib": [
       "dom",
@@ -18,10 +19,30 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
-      "@/components/*": [
+      "@assets/*": [
+        "src/assets/*"
+      ],
+      "@components/*": [
         "src/components/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@contexts/*": [
+        "src/contexts/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@store/*": [
+        "src/store/*"
+      ],
+      "@settings/*": [
+        "src/settings/*"
+      ],
+      "@framework/*": [
+        "src/framework/rest/*"
       ]
     }
   },

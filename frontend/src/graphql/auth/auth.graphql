@@ -1,0 +1,35 @@
+# mutation Signup($data: SignupInput!) {
+#   signup(data: $data) {
+#     refreshToken
+#     accessToken
+#   }
+# }
+
+mutation Login($loginData: LoginInput!) {
+  login(data: $loginData) {
+    refreshToken
+    accessToken
+  }
+}
+mutation Signup($data: SignupInput!) {
+  signup(data: $data) {
+    accessToken
+    refreshToken
+  }
+}
+query Me {
+  me {
+    email
+    firstname
+    lastname
+    id
+  }
+}
+
+# query Me {
+#   me {
+#     email
+#     firstname
+#     id
+#   }
+# }

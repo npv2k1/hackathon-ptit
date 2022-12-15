@@ -1,0 +1,1 @@
+docker build -t registry.gitlab.com/npv2k1/nnews-web:1.1 .

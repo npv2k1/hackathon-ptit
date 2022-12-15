@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@headlessui/react": "^1.5.0"
+  },
+  "scripts": {
+    "build:api": "cd backend && npm install --legacy-peer-deps --save && npm run build",
+    "build:web": "cd frontend && npm install && npm run build",
+    "build": "npm run build:api && npm run build:web",
+    "start": "npm run build && node api/index.js",
+    "start:api": "node api/index.js",
+    "start:web": "cd web && npm run start",
+    "ci": "npm run build && npm run test"
+  }
+}

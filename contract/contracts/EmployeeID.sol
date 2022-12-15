@@ -14,8 +14,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // }
 
 import "./interfaces/IEmployeeID.sol";
+import "./SBT/SBT.sol";
 
-contract EmployeeID is IEmployeeID {
+contract EmployeeID is IEmployeeID  {
     // using Address for address;
     // using Strings for uint256;
     using Counters for Counters.Counter;

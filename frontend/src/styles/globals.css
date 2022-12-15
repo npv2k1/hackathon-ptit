@@ -1,6 +1,0 @@
-/* comment this line by confict with antd css*/
-/* @tailwind base; */
-/* @import 'antd/dist/antd.css'; */
-@tailwind components;
-@tailwind utilities;
-@tailwind base;

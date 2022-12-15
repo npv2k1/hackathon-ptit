@@ -1,0 +1,22 @@
+.feed {
+  grid-template-columns: 100%;
+}
+
+.cards {
+  @screen mobileL {
+    max-width: calc(20rem * var(--num-cards) + var(--feed-gap) * (var(--num-cards) - 1));
+  }
+}
+
+.feedRow {
+  padding-bottom: var(--feed-gap);
+}
+
+.cards .feedRow {
+  grid-template-columns: repeat(var(--num-cards), 1fr);
+  grid-gap: var(--feed-gap);
+
+  @screen tablet {
+    grid-auto-rows: var(--card-height);
+  }
+}
