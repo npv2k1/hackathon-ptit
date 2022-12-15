@@ -27,6 +27,16 @@ async function main() {
   // const token = await Token.deploy();
 
   // console.log("Greeter deployed to:", token.address);
+  const vcheckinContract = await ethers.getContractFactory("VCheckin");
+
+  const vcheckin = await vcheckinContract.deploy(
+    "VCheckin",
+    "VCI",
+    "0xa63854a9DbB221dB8cA865BF4559cd09d974FB60"
+  );
+
+  console.log("VCheckin deployed to:", vcheckin.address);
+  return;
 
   const employeeIdContract = await ethers.getContractFactory("EmployeeID");
   const employeeId = await employeeIdContract.deploy("EmployeeID", "EID");
@@ -41,6 +51,7 @@ async function main() {
     employeeId.address,
     token.address
   );
+
   console.log("CheckIn deployed to:", checkIn.address);
 
   // make const file
