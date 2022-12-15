@@ -20,16 +20,7 @@ app.set("views", path.join(__dirname, "/views"));
 
 const httpServer = createServer(app);
 initSocket(httpServer);
-var ExpressPeerServer = require("peer").ExpressPeerServer;
-var peerExpress = require("express");
-var peerApp = peerExpress();
-var peerServer = require("http").createServer(peerApp);
-var options = { debug: true };
-var peerPort = process.env.PEER_PORT || 9000;
-peerApp.use("/peerjs", ExpressPeerServer(peerServer, options));
-peerServer.listen(peerPort, () => {
-  console.log("Peerjs is running on port 5000.");
-});
+
 /* Listening to the port 5000. */
 httpServer.listen(process.env.PORT || 5000, () => {
   console.log("server is running on port 5000.");

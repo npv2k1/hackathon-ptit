@@ -1,4 +1,3 @@
-import { EmployeeID } from 'contract/src/types/contracts'
 import { message } from 'antd'
 import {
   createContext,
@@ -9,18 +8,11 @@ import {
   useReducer,
 } from 'react'
 import getWeb3 from 'src/utils/getWeb3'
-import { VdtToken } from 'contract/src/types/contracts/Token.sol'
-import { CheckinContract } from 'contract/src/types/contracts/Checkin.sol'
+import { VCheckin } from 'contract/src/types/contracts/VCheckin'
 // ABI import
 import { AbiItem } from 'web3-utils'
-import EmployeeIDABI from 'contract/artifacts/contracts/EmployeeID.sol/EmployeeID.json'
-import TokenABI from 'contract/artifacts/contracts/Token.sol/VdtToken.json'
-import CheckinABI from 'contract/artifacts/contracts/Checkin.sol/CheckinContract.json'
-import {
-  CHECKIN_CONTRACT_ADDRESS,
-  EMPLOYEE_CONTRACT_ADDRESS,
-  TOKEN_CONTRACT_ADDRESS,
-} from 'src/common/constant'
+import CheckinABI from 'contract/artifacts/contracts/VCheckin.sol/VCheckin.json'
+import { CHECKIN_CONTRACT_ADDRESS, SOCKET_URL } from 'src/common/constant'
 import { io, Socket } from 'socket.io-client'
 
 interface Props {
@@ -36,14 +28,16 @@ export enum AppActionType {
   SET_VDT_TOKEN,
   SET_EMPLOYEE_CONTRACT,
   SET_SOCKET,
+  SET_CHECKIN_LOADING,
 }
 export interface IAppState {
   myStream: MediaStream | null
   account: string | null
-  employeeContract: EmployeeID | null
-  tokenContract: VdtToken | null
-  checkinContract: CheckinContract | null
+  employeeContract: any | null
+  tokenContract: any | null
+  checkinContract: VCheckin | null
   socket: Socket | null
+  checkinLoading: boolean
 }
 export interface IBranchAction {
   type: AppActionType
@@ -63,6 +57,7 @@ const branchStateDefault: IAppState = {
   tokenContract: null,
   checkinContract: null,
   socket: null,
+  checkinLoading: false,
 }
 
 export const reducer = (state: IAppState, action: IBranchAction): IAppState => {
@@ -106,6 +101,13 @@ export const reducer = (state: IAppState, action: IBranchAction): IAppState => {
         socket: action.payload.socket as IAppState['socket'],
       }
     }
+    case AppActionType.SET_CHECKIN_LOADING: {
+      return {
+        ...state,
+        checkinLoading: action.payload
+          .checkinLoading as IAppState['checkinLoading'],
+      }
+    }
 
     default:
       return state
@@ -135,31 +137,12 @@ const AppProvider = ({ children }: Props) => {
       } else {
         message.error('Please connect to MetaMask')
       }
-      // dispatch({
-      //   type: AppActionType.SET_EMPLOYEE_CONTRACT,
-      //   payload: {
-      //     employeeContract: new web3.eth.Contract(
-      //       EmployeeIDABI.abi as AbiItem[],
-      //       EMPLOYEE_CONTRACT_ADDRESS
-      //     ),
-      //   },
-      // })
-      // dispatch({
-      //   type: AppActionType.SET_VDT_TOKEN,
-      //   payload: {
-      //     tokenContract: new web3.eth.Contract(
-      //       TokenABI.abi as AbiItem[],
-      //       TOKEN_CONTRACT_ADDRESS
-      //     ),
-      //   },
-      // })
       dispatch({
         type: AppActionType.SET_CHECKIN_CONTRACT,
         payload: {
           checkinContract: new web3.eth.Contract(
             CheckinABI.abi as AbiItem[],
-            // CHECKIN_CONTRACT_ADDRESS
-            '0x77301B281EFB644D9ed3932EB6d59a960C5F1A7E'
+            CHECKIN_CONTRACT_ADDRESS
           ),
         },
       })
@@ -168,10 +151,9 @@ const AppProvider = ({ children }: Props) => {
   }, [dispatch])
 
   useEffect(() => {
-    let socket = io('ws://localhost:5000', {
+    let socket = io(SOCKET_URL, {
       transports: ['websocket'],
     })
-
     socket.on('connect', () => {
       console.log('connected')
     })
@@ -191,13 +173,6 @@ const AppProvider = ({ children }: Props) => {
       })
     }
   }, [dispatch])
-
-  // useEffect(()=>{
-  //   new web3.eth.Contract(
-  //     TODO_LIST_ABI.abi as AbiItem[],
-  //     "0xcF5b213B9AefF188690804Bd6F099EFCA2900D83"
-  //   );
-  // },[dispatch])
 
   const getUserInfo = useCallback(() => {
     if (state.employeeContract && state.account) {
@@ -243,9 +218,9 @@ const AppProvider = ({ children }: Props) => {
     }
   }, [state.account, state.tokenContract])
   const getCheckin = useCallback(
-    (id: string | number) => {
+    (addres: string) => {
       if (state.checkinContract && state.account) {
-        return state.checkinContract.methods.getCheckIn(id).call()
+        return state.checkinContract.methods.balanceOf(addres).call()
       }
     },
     [state.account, state.checkinContract]
@@ -261,7 +236,6 @@ const AppProvider = ({ children }: Props) => {
             })
           }
         })
-
         // return state.checkinContract.methods
         //   .checkIn(checkinData)
         //   .send({ from: state.account })
@@ -270,33 +244,45 @@ const AppProvider = ({ children }: Props) => {
     [state.account, state.checkinContract]
   )
 
-  const totalCheckin = useCallback(() => {
-    if (state.checkinContract && state.account) {
-      return state.checkinContract.methods.checkinId().call()
-    }
-  }, [state.account, state.checkinContract])
+  const setCheckinLoading = useCallback(
+    (loading: boolean) => {
+      dispatch({
+        type: AppActionType.SET_CHECKIN_LOADING,
+        payload: {
+          checkinLoading: loading,
+        },
+      })
+    },
+    [dispatch]
+  )
 
-  const getMyCheckin = useCallback(() => {
-    if (state.checkinContract && state.account) {
-      return state.checkinContract.methods
+  // const totalCheckin = useCallback(() => {
+  //   if (state.checkinContract && state.account) {
+  //     return state.checkinContract.methods.checkinId().call()
+  //   }
+  // }, [state.account, state.checkinContract])
 
-        .getMyCheckIn()
-        .call({ from: state.account })
-    }
-  }, [state.account, state.checkinContract])
+  // const getMyCheckin = useCallback(() => {
+  //   if (state.checkinContract && state.account) {
+  //     return state.checkinContract.methods
+
+  //       .getMyCheckIn()
+  //       .call({ from: state.account })
+  //   }
+  // }, [state.account, state.checkinContract])
 
   // listen checkin event
-  useEffect(() => {
-    if (state.checkinContract) {
-      state.checkinContract.events
-        .CheckinEvent()
-        .on('data', (event: any) => {
-          console.log(event)
-          message.success('Checkin event success')
-        })
-        .on('error', console.error)
-    }
-  }, [state.checkinContract])
+  // useEffect(() => {
+  //   if (state.checkinContract) {
+  //     state.checkinContract.events
+  //       .CheckinEvent()
+  //       .on('data', (event: any) => {
+  //         console.log(event)
+  //         message.success('Checkin event success')
+  //       })
+  //       .on('error', console.error)
+  //   }
+  // }, [state.checkinContract])
 
   const connect = useCallback(async () => {
     const web3 = await getWeb3()
@@ -310,6 +296,7 @@ const AppProvider = ({ children }: Props) => {
   }, [dispatch])
 
   const changeAccount = useCallback(async () => {
+    // @ts-ignore
     await window?.ethereum.request({
       method: 'wallet_requestPermissions',
       params: [{ eth_accounts: {} }],
@@ -322,8 +309,9 @@ const AppProvider = ({ children }: Props) => {
     getBalance,
     getCheckin,
     checkin,
-    totalCheckin,
-    getMyCheckin,
+    // totalCheckin,
+    // getMyCheckin,
+    setCheckinLoading,
     connect,
     changeAccount,
   }

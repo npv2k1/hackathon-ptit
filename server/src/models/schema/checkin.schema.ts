@@ -15,6 +15,9 @@ const checkinSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  transactionHash: {
+    type: String,
+  },
 });
 checkinSchema.virtual("id").get(function () {
   return this._id.toHexString();

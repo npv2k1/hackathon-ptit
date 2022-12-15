@@ -13,7 +13,7 @@ import type {
   BlockType,
   ContractEventLog,
   BaseContract,
-} from "../../../../../types";
+} from "../../types";
 
 export interface EventOptions {
   filter?: object;
@@ -21,65 +21,55 @@ export interface EventOptions {
   topics?: string[];
 }
 
-export type Approval = ContractEventLog<{
-  owner: string;
-  spender: string;
-  value: string;
+export type Attest = ContractEventLog<{
+  to: string;
+  tokenId: string;
   0: string;
   1: string;
-  2: string;
+}>;
+export type Burn = ContractEventLog<{
+  from: string;
+  tokenId: string;
+  0: string;
+  1: string;
 }>;
 export type Transfer = ContractEventLog<{
   from: string;
   to: string;
-  value: string;
+  tokenId: string;
   0: string;
   1: string;
   2: string;
 }>;
 
-export interface IERC20Metadata extends BaseContract {
+export interface IERC721Metadata extends BaseContract {
   constructor(
     jsonInterface: any[],
     address?: string,
     options?: ContractOptions
-  ): IERC20Metadata;
-  clone(): IERC20Metadata;
+  ): IERC721Metadata;
+  clone(): IERC721Metadata;
   methods: {
-    allowance(
-      owner: string,
-      spender: string
-    ): NonPayableTransactionObject<string>;
+    attest(to: string): NonPayableTransactionObject<string>;
 
-    approve(
-      spender: string,
-      amount: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    balanceOf(account: string): NonPayableTransactionObject<string>;
-
-    decimals(): NonPayableTransactionObject<string>;
+    balanceOf(owner: string): NonPayableTransactionObject<string>;
 
     name(): NonPayableTransactionObject<string>;
 
+    ownerOf(tokenId: number | string | BN): NonPayableTransactionObject<string>;
+
     symbol(): NonPayableTransactionObject<string>;
 
-    totalSupply(): NonPayableTransactionObject<string>;
-
-    transfer(
-      to: string,
-      amount: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
-
-    transferFrom(
-      from: string,
-      to: string,
-      amount: number | string | BN
-    ): NonPayableTransactionObject<boolean>;
+    tokenURI(
+      tokenId: number | string | BN
+    ): NonPayableTransactionObject<string>;
   };
   events: {
-    Approval(cb?: Callback<Approval>): EventEmitter;
-    Approval(options?: EventOptions, cb?: Callback<Approval>): EventEmitter;
+    Attest(cb?: Callback<Attest>): EventEmitter;
+    Attest(options?: EventOptions, cb?: Callback<Attest>): EventEmitter;
+
+    Burn(cb?: Callback<Burn>): EventEmitter;
+    Burn(options?: EventOptions, cb?: Callback<Burn>): EventEmitter;
 
     Transfer(cb?: Callback<Transfer>): EventEmitter;
     Transfer(options?: EventOptions, cb?: Callback<Transfer>): EventEmitter;
@@ -87,8 +77,11 @@ export interface IERC20Metadata extends BaseContract {
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
 
-  once(event: "Approval", cb: Callback<Approval>): void;
-  once(event: "Approval", options: EventOptions, cb: Callback<Approval>): void;
+  once(event: "Attest", cb: Callback<Attest>): void;
+  once(event: "Attest", options: EventOptions, cb: Callback<Attest>): void;
+
+  once(event: "Burn", cb: Callback<Burn>): void;
+  once(event: "Burn", options: EventOptions, cb: Callback<Burn>): void;
 
   once(event: "Transfer", cb: Callback<Transfer>): void;
   once(event: "Transfer", options: EventOptions, cb: Callback<Transfer>): void;

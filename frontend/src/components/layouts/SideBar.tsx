@@ -1,14 +1,5 @@
-import React from 'react'
-import { FaHotjar } from 'react-icons/fa'
-import { TiArrowUpThick } from 'react-icons/ti'
-import { IoIosAnalytics, IoMdChatboxes } from 'react-icons/io'
-import { GrLineChart, GrTechnology } from 'react-icons/gr'
-import { BsEye } from 'react-icons/bs'
-import { BiSearch } from 'react-icons/bi'
-import { useSettingState } from '@contexts/SettingContext'
 import Link from 'next/link'
-import { MdOutlineViewList } from 'react-icons/md'
-import { AiOutlineLineChart } from 'react-icons/ai'
+import { FaHotjar } from 'react-icons/fa'
 
 const MENU = [
   {
@@ -20,12 +11,10 @@ const MENU = [
 ]
 
 const SideBar = () => {
-  const { showSidebar } = useSettingState()
-
   return (
     <aside
       className={`sticky top-[80px] hidden min-h-full max-w-[300px]  self-start  bg-transparent  ${
-        showSidebar ? 'lg:flex' : 'hidden'
+        true ? 'lg:flex' : 'hidden'
       }`}
       aria-label="Sidebar"
     >

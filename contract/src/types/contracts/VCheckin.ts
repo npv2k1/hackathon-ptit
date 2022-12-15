@@ -33,12 +33,6 @@ export type Burn = ContractEventLog<{
   0: string;
   1: string;
 }>;
-export type Revoke = ContractEventLog<{
-  from: string;
-  tokenId: string;
-  0: string;
-  1: string;
-}>;
 export type RoleAdminChanged = ContractEventLog<{
   role: string;
   previousAdminRole: string;
@@ -84,11 +78,11 @@ export interface VCheckin extends BaseContract {
 
     OPERATOR_ROLE(): NonPayableTransactionObject<string>;
 
+    addMinter(to: string): NonPayableTransactionObject<void>;
+
     attest(to: string): NonPayableTransactionObject<string>;
 
     balanceOf(owner: string): NonPayableTransactionObject<string>;
-
-    burn(): NonPayableTransactionObject<void>;
 
     getRoleAdmin(role: string | number[]): NonPayableTransactionObject<string>;
 
@@ -110,12 +104,12 @@ export interface VCheckin extends BaseContract {
 
     ownerOf(tokenId: number | string | BN): NonPayableTransactionObject<string>;
 
+    removeMinter(to: string): NonPayableTransactionObject<void>;
+
     renounceRole(
       role: string | number[],
       account: string
     ): NonPayableTransactionObject<void>;
-
-    revoke(from: string): NonPayableTransactionObject<void>;
 
     revokeRole(
       role: string | number[],
@@ -130,13 +124,9 @@ export interface VCheckin extends BaseContract {
 
     symbol(): NonPayableTransactionObject<string>;
 
-    tokenIdOf(from: string): NonPayableTransactionObject<string>;
-
     tokenURI(
       tokenId: number | string | BN
     ): NonPayableTransactionObject<string>;
-
-    totalSupply(): NonPayableTransactionObject<string>;
   };
   events: {
     Attest(cb?: Callback<Attest>): EventEmitter;
@@ -144,9 +134,6 @@ export interface VCheckin extends BaseContract {
 
     Burn(cb?: Callback<Burn>): EventEmitter;
     Burn(options?: EventOptions, cb?: Callback<Burn>): EventEmitter;
-
-    Revoke(cb?: Callback<Revoke>): EventEmitter;
-    Revoke(options?: EventOptions, cb?: Callback<Revoke>): EventEmitter;
 
     RoleAdminChanged(cb?: Callback<RoleAdminChanged>): EventEmitter;
     RoleAdminChanged(
@@ -177,9 +164,6 @@ export interface VCheckin extends BaseContract {
 
   once(event: "Burn", cb: Callback<Burn>): void;
   once(event: "Burn", options: EventOptions, cb: Callback<Burn>): void;
-
-  once(event: "Revoke", cb: Callback<Revoke>): void;
-  once(event: "Revoke", options: EventOptions, cb: Callback<Revoke>): void;
 
   once(event: "RoleAdminChanged", cb: Callback<RoleAdminChanged>): void;
   once(

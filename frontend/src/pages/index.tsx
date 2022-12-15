@@ -1,25 +1,12 @@
 import { Button, message } from 'antd'
 
-import type { TableProps } from 'antd'
-import { Space, Table } from 'antd'
-import type {
-  ColumnsType,
-  FilterValue,
-  SorterResult,
-} from 'antd/es/table/interface'
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
-import AppProvider, { AppCtx } from 'src/contexts/AppContext'
-import { DatePicker, Form, Input } from 'antd'
-import moment from 'moment'
-import getWeb3 from 'src/utils/getWeb3'
-import { NextPage } from 'next'
 import Layout from '@components/layouts/Layout'
+import { Form, Space, Table } from 'antd'
+import type { ColumnsType } from 'antd/es/table/interface'
+import moment from 'moment'
+import { NextPage } from 'next'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { AppCtx } from 'src/contexts/AppContext'
 interface DataType {
   key: string
   name: string
@@ -43,7 +30,7 @@ const Header = () => {
 }
 
 const CheckInTable = () => {
-  const { methods, state } = useContext(AppCtx)
+  const { methods, state, dispatch } = useContext(AppCtx)
   const [data, setData] = useState<DataType[]>([])
   const [loading, setLoading] = useState(true)
   console.log(
@@ -61,7 +48,6 @@ const CheckInTable = () => {
 
   const Checkin = useCallback(async () => {
     if (!methods) return
-
     if (location) {
       console.log(
         'JSON.stringify(location)',
@@ -77,7 +63,7 @@ const CheckInTable = () => {
         })
       )
       setLoading(true)
-      message.success('Checkin success')
+      methods.setCheckinLoading(true)
     } else {
       message.error('Please allow location')
       navigator.geolocation.getCurrentPosition(function (position) {
@@ -87,12 +73,6 @@ const CheckInTable = () => {
   }, [location, methods])
 
   const columns: ColumnsType<DataType> = [
-    // {
-    //   title: 'Id',
-    //   dataIndex: 'id',
-    //   key: 'id',
-    //   ellipsis: true,
-    // },
     {
       title: 'Timestamp',
       dataIndex: 'timestamp',
@@ -111,20 +91,23 @@ const CheckInTable = () => {
       key: 'longitude',
     },
     {
-      title: 'tokenId',
-      dataIndex: 'tokenId',
-      key: 'tokenId',
+      title: 'transactionHash',
+      dataIndex: 'transactionHash',
+      key: 'transactionHash',
+      render: (text) => (
+        <a
+          className=""
+          target="black"
+          href={`https://testnet.aurorascan.dev/tx/${text}`}
+        >
+          {text}
+        </a>
+      ),
     },
   ]
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setLoading(false);
-  //   }
-  // }, [data]);
-
   useEffect(() => {
-    if (!loading) return
+    if (!loading || !methods) return
     if (!state.socket) return
     if (state.account === '') return
     state.socket.on('list-checkin', (_data) => {
@@ -133,41 +116,26 @@ const CheckInTable = () => {
     state.socket.emit('list-checkin', {
       address: state.account,
     })
+    state.socket.on('checkin:success', (data) => {
+      // message.success(`Checkin success ${data}`)
+      methods.setCheckinLoading(false)
+    })
     return () => {
+      if (!state.socket) return
       state.socket.off('list-checkin')
     }
-  }, [state, loading])
-  // useEffect(() => {
-  //   if (!loading) return
-  //   const fetchData = async () => {
-  //     const res = await methods.getMyCheckin()
-  //     console.log('🚀 ~ file: index.tsx ~ line 164 ~ fetchData ~ res', res)
-  //     if (res) {
-  //       const data = res?.map((item: any) => {
-  //         return {
-  //           id: item[0],
-  //           timestamp: item[2],
-  //           latitude: JSON.parse(item['checkinInfo'])?.latitude,
-  //           longitude: JSON.parse(item['checkinInfo'])?.longitude,
-  //           reward: 0,
-  //         }
-  //       })
-  //       setData(data)
-  //       setLoading(false)
-  //     }
-  //     // setLoading(false);
-  //   }
-  //   fetchData()
-  // }, [methods, loading])
+  }, [state, loading, methods])
 
   return (
     <>
       <Space style={{ marginBottom: 16 }}>
         <Button onClick={Checkin}>Checkin</Button>
-        {/* <Button onClick={clearFilters}>Clear filters</Button>
-        <Button onClick={clearAll}>Clear filters and sorters</Button> */}
       </Space>
-      <Table columns={columns} dataSource={data} />
+      <Table
+        loading={state.checkinLoading}
+        columns={columns}
+        dataSource={data}
+      />
     </>
   )
 }
@@ -221,18 +189,19 @@ const ProfileCard = () => {
 
   useEffect(() => {
     const getBalance = async () => {
-      const balance = await methods.getBalance()
+      const balance = await methods.getCheckin(state.account)
+      console.log('🚀 ~ file: index.tsx:201 ~ getBalance ~ balance', balance)
       setBalance(balance)
     }
     getBalance()
-  }, [methods])
+  }, [methods, state.account, state.checkinLoading])
 
   const formatAccount = (account: string) => {
     return account.slice(0, 6) + '...' + account.slice(-4)
   }
 
   const formatBalance = (balance: number) => {
-    return balance / 10 ** 18
+    return balance + ' VCI'
   }
 
   return (
@@ -254,36 +223,7 @@ const ProfileCard = () => {
         </div>
         <div className="flex mt-4 space-x-3 md:mt-6"></div>
       </div>
-      <div>
-        {/* <Form form={form} onFinish={handleSubmitUserInfo} name="dynamic_rule">
-          <Form.Item
-            {...formItemLayout}
-            name="fullName"
-            label="FullName"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your fullName',
-              },
-            ]}
-          >
-            <Input placeholder="Please input your name" />
-          </Form.Item>
-
-          <Form.Item
-            {...formItemLayout}
-            name="dateOfBirth"
-            label="Date of birth"
-          >
-            <DatePicker format="YYYY-MM-DD" />
-          </Form.Item>
-          <Form.Item {...formTailLayout}>
-            <Button type="primary" color="#24292e" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form> */}
-      </div>
+      <div></div>
     </div>
   )
 }

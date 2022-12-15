@@ -1,37 +1,15 @@
-import Avatar from '@components/ui/avatar'
 import Button from '@components/ui/Button'
-import ProfileDropdown from '@components/ui/dropdown/ProfileDropdown'
-import { useModalAction } from '@components/ui/modal/ModalContext'
 import { AppCtx } from '@contexts/AppContext'
-import { useAuthAction, useAuthState } from '@contexts/AuthContext'
-import { useSettingAction } from '@contexts/SettingContext'
-import { authorizationAtom } from '@store/authorization-atom'
-import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import React, { useContext, useEffect } from 'react'
-import {
-  AiOutlineHome,
-  AiOutlineMenu,
-  AiOutlineSearch,
-  AiOutlineShop,
-} from 'react-icons/ai'
-import { IoMdNotifications, IoMdBookmark } from 'react-icons/io'
-import { useMeQuery } from 'src/types'
+import { useContext } from 'react'
+import { AiOutlineMenu } from 'react-icons/ai'
+import { IoMdBookmark, IoMdNotifications } from 'react-icons/io'
 import Search from './Search'
 
 const Header = () => {
   const router = useRouter()
-  const { openModal } = useModalAction()
-  const { isAuthorized } = useAuthState()
-  const { toggleSidebar } = useSettingAction()
 
-  const handleLogin = () => {
-    return openModal('LOGIN_VIEW')
-  }
-  const handleRegister = () => {
-    return openModal('REGISTER_VIEW')
-  }
   const { methods, state } = useContext(AppCtx)
 
   return (
@@ -47,7 +25,7 @@ const Header = () => {
               <ul className="flex flex-col items-center mt-4 md:mt-0 md:flex-row md:space-x-8 md:text-sm md:font-medium">
                 <li>
                   <div
-                    onClick={() => toggleSidebar()}
+                    onClick={() => {}}
                     className="cursor-pointer rounded-xl border bg-[#eff4fa] p-2 hover:border-gray-500"
                   >
                     <AiOutlineMenu
@@ -58,11 +36,7 @@ const Header = () => {
                 </li>
                 <li>
                   <Button
-                    text={
-                      state?.account
-                        ? "changeAccount"
-                        : "connectWallet"
-                    }
+                    text={state?.account ? 'changeAccount' : 'connectWallet'}
                     onClick={() =>
                       state?.account
                         ? methods.changeAccount()
@@ -102,7 +76,7 @@ const Header = () => {
           </div>
         </div>
         <div className="flex flex-row items-center justify-center px-2 py-1 space-x-2 rounded-full">
-          {isAuthorized ? (
+          {/* {isAuthorized ? (
             <div>
               <ProfileDropdown />
             </div>
@@ -111,7 +85,7 @@ const Header = () => {
               <Button text="Register" onClick={handleRegister} />
               <Button text="Login" onClick={handleLogin} />
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
